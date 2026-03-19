@@ -2,7 +2,7 @@ import { appendTextFile } from '../utils/fs.js';
 import type { BaggageContext, TraceJsonlRecord } from '../types/baggage.js';
 import type { ExportResult, ReadableSpan, SpanExporter } from '@opentelemetry/sdk-trace-base';
 
-const hrTimeToIso = (time: [number, number]): string => new Date((time[0] * 1_000 + time[1] / 1_000_000) * 1_000).toISOString();
+const hrTimeToIso = (time: [number, number]): string => new Date(time[0] * 1_000 + time[1] / 1_000_000).toISOString();
 const hrTimeToMs = (time: [number, number]): number => time[0] * 1_000 + time[1] / 1_000_000;
 
 export class JsonlTraceExporter implements SpanExporter {
@@ -55,4 +55,3 @@ export class JsonlTraceExporter implements SpanExporter {
   public async shutdown(): Promise<void> {}
   public async forceFlush(): Promise<void> {}
 }
-

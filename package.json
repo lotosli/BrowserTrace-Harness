@@ -7,9 +7,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm -r --if-present build",
     "build:release": "pnpm --filter @browsertrace/browsertrace build:release",
-    "test": "pnpm -r test",
-    "clean": "pnpm -r clean"
+    "test": "pnpm -r --if-present test",
+    "clean": "pnpm -r --if-present clean"
   }
 }

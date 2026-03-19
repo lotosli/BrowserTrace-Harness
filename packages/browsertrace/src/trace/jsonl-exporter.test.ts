@@ -40,5 +40,7 @@ describe('JsonlTraceExporter', () => {
     const content = await readFile(outputPath, 'utf8');
     expect(result).toBe(otelCore.ExportResultCode.SUCCESS);
     expect(content).toContain('"traceId":"abc"');
+    expect(content).toContain('"startTime":"1970-01-01T00:00:00.000Z"');
+    expect(content).toContain('"endTime":"1970-01-01T00:00:00.001Z"');
   });
 });

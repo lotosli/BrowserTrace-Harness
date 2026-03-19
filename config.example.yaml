@@ -32,6 +32,17 @@ apps:
       login_url_contains: "/login"
       critical_api_patterns:
         - "/api/servicegraph"
+  demo-react:
+    allow_api_origins:
+      - http://127.0.0.1:8083
+      - http://localhost:8083
+    validation:
+      page_selector: "[data-testid='demo-app']"
+      api_url: "http://127.0.0.1:8083/api/demo/options/apps"
+      critical_api_patterns:
+        - "/api/demo/options/apps"
+        - "/api/demo/options/scenarios"
+        - "/api/demo/run"
 
 java_debug:
   default_profile_dir: ~/.browsertrace/java-debug
