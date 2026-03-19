@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "browsertrace.ai-debug-summary.v1",
+  "generatedAt": "2026-03-19T16:23:47.785Z",
+  "action": {
+    "type": "click",
+    "selector": "[data-testid='run-button']"
+  },
+  "currentUrl": "http://127.0.0.1:5174/?appId=orders&scenarioId=bad_request",
+  "pageTitle": "BrowserTrace React Demo",
+  "shadowValidation": {
+    "status": "expired",
+    "currentUrl": "http://127.0.0.1:5174/?appId=orders&scenarioId=bad_request",
+    "selectorVisible": true
+  },
+  "actionRequestCount": 1,
+  "actionErrorCount": 1,
+  "actionExceptionCount": 0,
+  "outcome": {
+    "category": "http_error",
+    "reason": "缺少业务过滤条件，无法处理请求。",
+    "confidence": 0.99
+  },
+  "page": {
+    "appId": "orders",
+    "appLabel": "订单模块",
+    "scenarioId": "bad_request",
+    "scenarioLabel": "400 参数错误",
+    "apiBase": "http://127.0.0.1:8084",
+    "observedHttpStatus": "400",
+    "expectedStatus": "400",
+    "failureTitle": "后端返回错误 400",
+    "failureDetail": "缺少业务过滤条件，无法处理请求。",
+    "responsePanelJson": {
+      "ok": false,
+      "message": "缺少业务过滤条件，无法处理请求。",
+      "status": 400,
+      "timestamp": "2026-03-19T16:23:47.626537Z",
+      "path": "/api/demo/run",
+      "error": "Bad Request"
+    },
+    "responsePanelText": "{ \"ok\": false, \"message\": \"缺少业务过滤条件，无法处理请求。\", \"status\": 400, \"timestamp\": \"2026-03-19T16:23:47.626537Z\", \"path\": \"/api/demo/run\", \"error\": \"Bad Request\" }",
+    "textExcerpt": "BROWSERTRACE EXAMPLE BrowserTrace React Demo 两个下拉框都从 Java 后端拉取，包含成功和常见错误场景。 上层模块菜单 订单模块 支付模块 包含订单查询、依赖图和常见异常场景 下层场景菜单 200 正确: 用户资料 200 正确: 服务依赖 400 参数错误 404 资源不存在 500 服务内部错误 客户端超时 200 结构错误 模拟前端传参不完整 API Base: http://127.0.0.1:8084 HTTP: 400 预期: 400 调用后端 API 调用结果 后端返回错误 400 预置场景包括 200 正确、400、404、500、客户端超时，以及 HTTP 200 但返回结构错误。 { \"ok\": false, \"message\": \"缺少业务过滤条件，无法处理请求。\", \"status\": 400, \"timestamp\": \"2026-03-19T16:23:47.626537Z\", \"path\": \"/api/demo/run\", \"error\": \"Bad Request\" } 缺少业务过滤条件，无法处理请求。"
+  },
+  "rootRequest": {
+    "sequence": 71,
+    "url": "http://127.0.0.1:8084/api/demo/run",
+    "method": "POST",
+    "resourceType": "fetch",
+    "startedAt": "2026-03-19T16:23:47.654Z",
+    "traceId": "36a241470d0dfb089602175b8425fc3e",
+    "spanId": "2af25c78bf902d62",
+    "status": 400,
+    "statusText": "",
+    "ok": false,
+    "finishedAt": "2026-03-19T16:23:47.654Z",
+    "durationMs": 0,
+    "responseHeaders": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "http://127.0.0.1:5174",
+      "connection": "close",
+      "content-type": "application/json",
+      "date": "Thu, 19 Mar 2026 16:23:47 GMT",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+    },
+    "responseBodyText": "{\"ok\":false,\"message\":\"缺少业务过滤条件，无法处理请求。\",\"status\":400,\"timestamp\":\"2026-03-19T16:23:47.626537Z\",\"path\":\"/api/demo/run\",\"error\":\"Bad Request\"}",
+    "responseBodyJson": {
+      "ok": false,
+      "message": "缺少业务过滤条件，无法处理请求。",
+      "status": 400,
+      "timestamp": "2026-03-19T16:23:47.626537Z",
+      "path": "/api/demo/run",
+      "error": "Bad Request"
+    }
+  },
+  "failedRequests": [
+    {
+      "sequence": 71,
+      "url": "http://127.0.0.1:8084/api/demo/run",
+      "method": "POST",
+      "resourceType": "fetch",
+      "startedAt": "2026-03-19T16:23:47.654Z",
+      "traceId": "36a241470d0dfb089602175b8425fc3e",
+      "spanId": "2af25c78bf902d62",
+      "status": 400,
+      "statusText": "",
+      "ok": false,
+      "finishedAt": "2026-03-19T16:23:47.654Z",
+      "durationMs": 0,
+      "responseHeaders": {
+        "access-control-allow-credentials": "true",
+        "access-control-allow-origin": "http://127.0.0.1:5174",
+        "connection": "close",
+        "content-type": "application/json",
+        "date": "Thu, 19 Mar 2026 16:23:47 GMT",
+        "transfer-encoding": "chunked",
+        "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+      },
+      "responseBodyText": "{\"ok\":false,\"message\":\"缺少业务过滤条件，无法处理请求。\",\"status\":400,\"timestamp\":\"2026-03-19T16:23:47.626537Z\",\"path\":\"/api/demo/run\",\"error\":\"Bad Request\"}",
+      "responseBodyJson": {
+        "ok": false,
+        "message": "缺少业务过滤条件，无法处理请求。",
+        "status": 400,
+        "timestamp": "2026-03-19T16:23:47.626537Z",
+        "path": "/api/demo/run",
+        "error": "Bad Request"
+      }
+    }
+  ],
+  "consoleErrors": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 400 ()",
+      "timestamp": "2026-03-19T16:23:47.654Z",
+      "location": {
+        "url": "http://127.0.0.1:8084/api/demo/run",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "exceptions": [],
+  "trace": {
+    "traceId": "36a241470d0dfb089602175b8425fc3e",
+    "traceparent": "00-36a241470d0dfb089602175b8425fc3e-2af25c78bf902d62-01",
+    "tracestate": "",
+    "baggage": {
+      "spec.id": "UNSPECIFIED",
+      "run.id": "run_246b3b457d",
+      "session.id": "demo-react-bad-request-5174",
+      "app.name": "demo-react",
+      "env.name": "local",
+      "page.url": "http://127.0.0.1:5174/?appId=orders&scenarioId=bad_request"
+    }
+  },
+  "artifacts": {
+    "aiSummaryPath": "runtime/ai-summary.json",
+    "pageStatePath": "runtime/page-state.json",
+    "actionNetworkDetailedPath": "runtime/action-network-detailed.json",
+    "actionConsoleDetailedPath": "runtime/action-console-detailed.json",
+    "pageHtmlPath": "runtime/page.html",
+    "postActionScreenshotPath": "runtime/post-action.png"
+  },
+  "sample": {
+    "repoPath": "docs/examples/ai-debug-runs/http-400-bad-request",
+    "sourceRunId": "run_246b3b457d",
+    "note": "Packaged example copied from a real local BrowserTrace run."
+  }
+}

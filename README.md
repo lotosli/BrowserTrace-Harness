@@ -67,4 +67,5 @@ Artifacts are written to `packages/browsertrace/releases`.
 - [Architecture](docs/architecture.md)
 - [Testing Guide](docs/testing.md)
 - [Latest Local Test Results](docs/test-results.md)
+- [AI Debug Run Samples](docs/examples/ai-debug-runs/README.md)
 - [Chinese Demo Guide](docs/demo-react-usage.zh-CN.md)

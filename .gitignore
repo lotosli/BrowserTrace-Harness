@@ -5,6 +5,8 @@ dist/
 .vscode/
 coverage/
 artifacts/
+!packages/browsertrace/src/artifacts/
+!packages/browsertrace/src/artifacts/*.ts
 releases/
 packages/browsertrace/dist-pkg/
 packages/browsertrace/releases/

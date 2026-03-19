@@ -1,0 +1,38 @@
+[
+  {
+    "sequence": 71,
+    "url": "http://127.0.0.1:8084/api/demo/run",
+    "method": "POST",
+    "resourceType": "fetch",
+    "startedAt": "2026-03-19T16:24:26.415Z",
+    "traceId": "7296440bdbed441ed2d168f782b8a917",
+    "spanId": "d121e6a8a626aaa1",
+    "status": 200,
+    "statusText": "",
+    "ok": true,
+    "finishedAt": "2026-03-19T16:24:26.415Z",
+    "durationMs": 0,
+    "responseHeaders": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "http://127.0.0.1:5174",
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Thu, 19 Mar 2026 16:24:26 GMT",
+      "keep-alive": "timeout=60",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+    },
+    "responseBodyText": "{\"diagnostics\":{\"traceparent\":\"00-7296440bdbed441ed2d168f782b8a917-d121e6a8a626aaa1-01\",\"baggage\":\"spec.id=UNSPECIFIED;browsertrace,run.id=run_27d03706d9;browsertrace,session.id=demo-react-bad-payload-5174;browsertrace,app.name=demo-react;browsertrace,env.name=local;browsertrace,page.url=http%3A%2F%2F127.0.0.1%3A5174%2F%3FappId%3Dorders%26scenarioId%3Dbad_payload;browsertrace\",\"requestId\":\"\"},\"message\":\"故意返回不符合前端预期的结构。\",\"scenarioId\":\"bad_payload\",\"module\":\"orders\",\"status\":\"ok\"}",
+    "responseBodyJson": {
+      "diagnostics": {
+        "traceparent": "00-7296440bdbed441ed2d168f782b8a917-d121e6a8a626aaa1-01",
+        "baggage": "spec.id=UNSPECIFIED;browsertrace,run.id=run_27d03706d9;browsertrace,session.id=demo-react-bad-payload-5174;browsertrace,app.name=demo-react;browsertrace,env.name=local;browsertrace,page.url=http%3A%2F%2F127.0.0.1%3A5174%2F%3FappId%3Dorders%26scenarioId%3Dbad_payload;browsertrace",
+        "requestId": ""
+      },
+      "message": "故意返回不符合前端预期的结构。",
+      "scenarioId": "bad_payload",
+      "module": "orders",
+      "status": "ok"
+    }
+  }
+]

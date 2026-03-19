@@ -1,0 +1,118 @@
+{
+  "title": "BrowserTrace React Demo",
+  "url": "http://127.0.0.1:5174/?appId=orders&scenarioId=server_error",
+  "textExcerpt": "BROWSERTRACE EXAMPLE BrowserTrace React Demo 两个下拉框都从 Java 后端拉取，包含成功和常见错误场景。 上层模块菜单 订单模块 支付模块 包含订单查询、依赖图和常见异常场景 下层场景菜单 200 正确: 用户资料 200 正确: 服务依赖 400 参数错误 404 资源不存在 500 服务内部错误 客户端超时 200 结构错误 模拟后端依赖异常 API Base: http://127.0.0.1:8084 HTTP: 500 预期: 500 调用后端 API 调用结果 后端返回错误 500 预置场景包括 200 正确、400、404、500、客户端超时，以及 HTTP 200 但返回结构错误。 { \"ok\": false, \"message\": \"模拟的后端依赖异常。\", \"status\": 500, \"timestamp\": \"2026-03-19T16:24:26.375701Z\", \"path\": \"/api/demo/run\", \"error\": \"Internal Server Error\" } 模拟的后端依赖异常。",
+  "headings": [
+    "BrowserTrace React Demo",
+    "调用结果"
+  ],
+  "buttons": [
+    "调用后端 API"
+  ],
+  "forms": [
+    {
+      "name": "app-select",
+      "type": "select",
+      "value": "orders",
+      "disabled": false
+    },
+    {
+      "name": "scenario-select",
+      "type": "select",
+      "value": "server_error",
+      "disabled": false
+    }
+  ],
+  "elementsByTestId": {
+    "demo-app": {
+      "testId": "demo-app",
+      "tagName": "main",
+      "text": "BROWSERTRACE EXAMPLE BrowserTrace React Demo 两个下拉框都从 Java 后端拉取，包含成功和常见错误场景。 上层模块菜单 订单模块 支付模块 包含订单查询、依赖图和常见异常场景 下层场景菜单 200 正确: 用户资料 200 正确: 服务依赖 400 参数错误 404 资源不存在 500 服务内部错误 客户端超时 200 结构错误 模拟后端依赖异常 API Base: http://127.0.0.1:8084 HTTP: 500 预期: 500 调用后端 API 调用结果 后端返回错误 500 预置场景包括 200 正确、400、404、500、客户端超时，以及 HTTP 200 但返回结构错误。 { \"ok\": false, \"message\": \"模拟的后端依赖异常。\", \"status\": 500, \"timestamp\": \"2026-03-19T16:24:26.375701Z\", \"path\": \"/api/demo/run\", \"error\": \"Internal Server Error\" } 模拟的后端依赖异常。",
+      "visible": true,
+      "className": "page-shell"
+    },
+    "app-select": {
+      "testId": "app-select",
+      "tagName": "select",
+      "text": "订单模块 支付模块",
+      "visible": true,
+      "disabled": false,
+      "value": "orders",
+      "selectedText": "订单模块"
+    },
+    "scenario-select": {
+      "testId": "scenario-select",
+      "tagName": "select",
+      "text": "200 正确: 用户资料 200 正确: 服务依赖 400 参数错误 404 资源不存在 500 服务内部错误 客户端超时 200 结构错误",
+      "visible": true,
+      "disabled": false,
+      "value": "server_error",
+      "selectedText": "500 服务内部错误"
+    },
+    "api-base-chip": {
+      "testId": "api-base-chip",
+      "tagName": "span",
+      "text": "API Base: http://127.0.0.1:8084",
+      "visible": true,
+      "className": "status-chip"
+    },
+    "http-status-chip": {
+      "testId": "http-status-chip",
+      "tagName": "span",
+      "text": "HTTP: 500",
+      "visible": true,
+      "className": "status-chip"
+    },
+    "expected-status-chip": {
+      "testId": "expected-status-chip",
+      "tagName": "span",
+      "text": "预期: 500",
+      "visible": true,
+      "className": "status-chip"
+    },
+    "run-button": {
+      "testId": "run-button",
+      "tagName": "button",
+      "text": "调用后端 API",
+      "visible": true,
+      "className": "primary-button",
+      "disabled": false
+    },
+    "result-status-badge": {
+      "testId": "result-status-badge",
+      "tagName": "span",
+      "text": "后端返回错误 500",
+      "visible": true,
+      "className": "error-badge"
+    },
+    "response-panel": {
+      "testId": "response-panel",
+      "tagName": "pre",
+      "text": "{ \"ok\": false, \"message\": \"模拟的后端依赖异常。\", \"status\": 500, \"timestamp\": \"2026-03-19T16:24:26.375701Z\", \"path\": \"/api/demo/run\", \"error\": \"Internal Server Error\" }",
+      "visible": true
+    },
+    "error-detail": {
+      "testId": "error-detail",
+      "tagName": "p",
+      "text": "模拟的后端依赖异常。",
+      "visible": true,
+      "className": "error-detail"
+    }
+  },
+  "responsePanelText": "{ \"ok\": false, \"message\": \"模拟的后端依赖异常。\", \"status\": 500, \"timestamp\": \"2026-03-19T16:24:26.375701Z\", \"path\": \"/api/demo/run\", \"error\": \"Internal Server Error\" }",
+  "responsePanelJson": {
+    "ok": false,
+    "message": "模拟的后端依赖异常。",
+    "status": 500,
+    "timestamp": "2026-03-19T16:24:26.375701Z",
+    "path": "/api/demo/run",
+    "error": "Internal Server Error"
+  },
+  "failureTitle": "后端返回错误 500",
+  "failureDetail": "模拟的后端依赖异常。",
+  "statusChips": {
+    "api-base-chip": "API Base: http://127.0.0.1:8084",
+    "http-status-chip": "HTTP: 500",
+    "expected-status-chip": "预期: 500"
+  }
+}

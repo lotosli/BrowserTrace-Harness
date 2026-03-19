@@ -94,6 +94,8 @@ For AI-assisted debugging, inspect files in this order:
 5. `correlation/tempo-trace.json`
 6. `correlation/loki-trace-logs.json`
 
+Repository examples are available under `docs/examples/ai-debug-runs/`.
+
 ## Expected interpretation
 
 `ai-summary.json` should be enough to classify:

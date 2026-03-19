@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "browsertrace.ai-debug-summary.v1",
+  "generatedAt": "2026-03-19T16:24:26.549Z",
+  "action": {
+    "type": "click",
+    "selector": "[data-testid='run-button']"
+  },
+  "currentUrl": "http://127.0.0.1:5174/?appId=orders&scenarioId=bad_payload",
+  "pageTitle": "BrowserTrace React Demo",
+  "shadowValidation": {
+    "status": "expired",
+    "currentUrl": "http://127.0.0.1:5174/?appId=orders&scenarioId=bad_payload",
+    "selectorVisible": true
+  },
+  "actionRequestCount": 1,
+  "actionErrorCount": 0,
+  "actionExceptionCount": 0,
+  "outcome": {
+    "category": "invalid_response_shape",
+    "reason": "HTTP 200，但响应缺少 ok=true 或 data 字段。",
+    "confidence": 0.99
+  },
+  "page": {
+    "appId": "orders",
+    "appLabel": "订单模块",
+    "scenarioId": "bad_payload",
+    "scenarioLabel": "200 结构错误",
+    "apiBase": "http://127.0.0.1:8084",
+    "observedHttpStatus": "200",
+    "expectedStatus": "200-invalid-schema",
+    "failureTitle": "返回结构错误",
+    "failureDetail": "HTTP 200，但响应缺少 ok=true 或 data 字段。",
+    "responsePanelJson": {
+      "diagnostics": {
+        "traceparent": "00-7296440bdbed441ed2d168f782b8a917-d121e6a8a626aaa1-01",
+        "baggage": "spec.id=UNSPECIFIED;browsertrace,run.id=run_27d03706d9;browsertrace,session.id=demo-react-bad-payload-5174;browsertrace,app.name=demo-react;browsertrace,env.name=local;browsertrace,page.url=http%3A%2F%2F127.0.0.1%3A5174%2F%3FappId%3Dorders%26scenarioId%3Dbad_payload;browsertrace",
+        "requestId": ""
+      },
+      "message": "故意返回不符合前端预期的结构。",
+      "scenarioId": "bad_payload",
+      "module": "orders",
+      "status": "ok"
+    },
+    "responsePanelText": "{ \"diagnostics\": { \"traceparent\": \"00-7296440bdbed441ed2d168f782b8a917-d121e6a8a626aaa1-01\", \"baggage\": \"spec.id=UNSPECIFIED;browsertrace,run.id=run_27d03706d9;browsertrace,session.id=demo-react-bad-payload-5174;browsertrace,app.name=demo-react;browsertrace,env.name=local;browsertrace,page.url=http%3A%2F%2F127.0.0.1%3A5174%2F%3FappId%3Dorders%26scenarioId%3Dbad_payload;browsertrace\", \"requestId\": \"\" }, \"message\": \"故意返回不符合前端预期的结构。\", \"scenarioId\": \"bad_payload\", \"module\": \"orders\", \"status\": \"ok\" }",
+    "textExcerpt": "BROWSERTRACE EXAMPLE BrowserTrace React Demo 两个下拉框都从 Java 后端拉取，包含成功和常见错误场景。 上层模块菜单 订单模块 支付模块 包含订单查询、依赖图和常见异常场景 下层场景菜单 200 正确: 用户资料 200 正确: 服务依赖 400 参数错误 404 资源不存在 500 服务内部错误 客户端超时 200 结构错误 HTTP 200 但返回结构不符合预期 API Base: http://127.0.0.1:8084 HTTP: 200 预期: 200-invalid-schema 调用后端 API 调用结果 返回结构错误 预置场景包括 200 正确、400、404、500、客户端超时，以及 HTTP 200 但返回结构错误。 { \"diagnostics\": { \"traceparent\": \"00-7296440bdbed441ed2d168f782b8a917-d121e6a8a626aaa1-01\", \"baggage\": \"spec.id=UNSPECIFIED;browsertrace,run.id=run_27d03706d9;browsertrace,session.id=demo-react-bad-payload-5174;browsertrace,app.name=demo-react;browsertrace,env.name=local;browsertrace,page.url=http%3A%2F%2F127.0.0.1%3A5174%2F%3FappId%3Dorders%26scenarioId%3Dbad_payload;browsertrace\", \"requestId\": \"\" }, \"message\": \"故意返回不符合前端预期的结构。\", \"scenarioId\": \"bad_payload\", \"module\": \"orders\", \"status\": \"ok\" } HTTP 200，但响应缺少 ok=true 或 data 字段。"
+  },
+  "rootRequest": {
+    "sequence": 71,
+    "url": "http://127.0.0.1:8084/api/demo/run",
+    "method": "POST",
+    "resourceType": "fetch",
+    "startedAt": "2026-03-19T16:24:26.415Z",
+    "traceId": "7296440bdbed441ed2d168f782b8a917",
+    "spanId": "d121e6a8a626aaa1",
+    "status": 200,
+    "statusText": "",
+    "ok": true,
+    "finishedAt": "2026-03-19T16:24:26.415Z",
+    "durationMs": 0,
+    "responseHeaders": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "http://127.0.0.1:5174",
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Thu, 19 Mar 2026 16:24:26 GMT",
+      "keep-alive": "timeout=60",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+    },
+    "responseBodyText": "{\"diagnostics\":{\"traceparent\":\"00-7296440bdbed441ed2d168f782b8a917-d121e6a8a626aaa1-01\",\"baggage\":\"spec.id=UNSPECIFIED;browsertrace,run.id=run_27d03706d9;browsertrace,session.id=demo-react-bad-payload-5174;browsertrace,app.name=demo-react;browsertrace,env.name=local;browsertrace,page.url=http%3A%2F%2F127.0.0.1%3A5174%2F%3FappId%3Dorders%26scenarioId%3Dbad_payload;browsertrace\",\"requestId\":\"\"},\"message\":\"故意返回不符合前端预期的结构。\",\"scenarioId\":\"bad_payload\",\"module\":\"orders\",\"status\":\"ok\"}",
+    "responseBodyJson": {
+      "diagnostics": {
+        "traceparent": "00-7296440bdbed441ed2d168f782b8a917-d121e6a8a626aaa1-01",
+        "baggage": "spec.id=UNSPECIFIED;browsertrace,run.id=run_27d03706d9;browsertrace,session.id=demo-react-bad-payload-5174;browsertrace,app.name=demo-react;browsertrace,env.name=local;browsertrace,page.url=http%3A%2F%2F127.0.0.1%3A5174%2F%3FappId%3Dorders%26scenarioId%3Dbad_payload;browsertrace",
+        "requestId": ""
+      },
+      "message": "故意返回不符合前端预期的结构。",
+      "scenarioId": "bad_payload",
+      "module": "orders",
+      "status": "ok"
+    }
+  },
+  "failedRequests": [],
+  "consoleErrors": [],
+  "exceptions": [],
+  "trace": {
+    "traceId": "7296440bdbed441ed2d168f782b8a917",
+    "traceparent": "00-7296440bdbed441ed2d168f782b8a917-d121e6a8a626aaa1-01",
+    "tracestate": "",
+    "baggage": {
+      "spec.id": "UNSPECIFIED",
+      "run.id": "run_27d03706d9",
+      "session.id": "demo-react-bad-payload-5174",
+      "app.name": "demo-react",
+      "env.name": "local",
+      "page.url": "http://127.0.0.1:5174/?appId=orders&scenarioId=bad_payload"
+    }
+  },
+  "artifacts": {
+    "aiSummaryPath": "runtime/ai-summary.json",
+    "pageStatePath": "runtime/page-state.json",
+    "actionNetworkDetailedPath": "runtime/action-network-detailed.json",
+    "actionConsoleDetailedPath": "runtime/action-console-detailed.json",
+    "pageHtmlPath": "runtime/page.html",
+    "postActionScreenshotPath": "runtime/post-action.png"
+  },
+  "sample": {
+    "repoPath": "docs/examples/ai-debug-runs/invalid-response-shape",
+    "sourceRunId": "run_27d03706d9",
+    "note": "Packaged example copied from a real local BrowserTrace run."
+  }
+}
