@@ -1,5 +1,6 @@
-import { mkdir, rm } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,6 +8,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const packageDir = path.resolve(scriptDir, '..');
 const outputDir = path.join(packageDir, 'releases');
 const entrypoint = path.join(packageDir, 'dist-pkg', 'pkg-main.cjs');
+const checksumFile = path.join(outputDir, 'SHA256SUMS.txt');
 
 const targets = [
   { pkgTarget: 'node18-macos-x64', name: 'browsertrace-darwin-x64' },
@@ -54,3 +56,12 @@ for (const target of targets) {
     packageDir
   );
 }
+
+const checksums = [];
+for (const target of targets) {
+  const artifact = path.join(outputDir, target.name);
+  const digest = createHash('sha256').update(await readFile(artifact)).digest('hex');
+  checksums.push(`${digest}  ${target.name}`);
+}
+
+await writeFile(checksumFile, `${checksums.join('\n')}\n`, 'utf8');
