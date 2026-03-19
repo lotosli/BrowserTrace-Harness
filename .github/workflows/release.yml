@@ -68,7 +68,7 @@ jobs:
         run: node ./scripts/build-release.mjs --platform linux --skip-checksums
 
       - name: Upload Linux artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: release-linux
           path: |
@@ -106,7 +106,7 @@ jobs:
         run: node ./scripts/build-release.mjs --platform darwin --skip-checksums
 
       - name: Upload macOS artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: release-darwin
           path: |
@@ -144,7 +144,7 @@ jobs:
         run: node ./scripts/build-release.mjs --platform windows --skip-checksums
 
       - name: Upload Windows artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: release-windows
           path: |
@@ -160,7 +160,7 @@ jobs:
       - build-windows
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: release-*
           merge-multiple: true
