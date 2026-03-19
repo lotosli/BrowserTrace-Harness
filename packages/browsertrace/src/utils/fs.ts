@@ -24,6 +24,11 @@ export const writeJsonFile = async (filePath: string, value: unknown): Promise<v
   await writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
 };
 
+export const writeTextFile = async (filePath: string, value: string): Promise<void> => {
+  await ensureDirectory(path.dirname(filePath));
+  await writeFile(filePath, value, 'utf8');
+};
+
 export const readJsonFile = async <T>(filePath: string): Promise<T> => {
   const content = await readFile(filePath, 'utf8');
   return JSON.parse(content) as T;
@@ -58,4 +63,3 @@ export const exists = async (filePath: string): Promise<boolean> => {
     return false;
   }
 };
-

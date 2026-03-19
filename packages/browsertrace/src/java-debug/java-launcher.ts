@@ -13,14 +13,17 @@ export type LaunchJavaOptions = {
   artifactsDir: string;
 };
 
+export const buildJavaLaunchArgs = (options: LaunchJavaOptions): string[] => [
+  `-javaagent:${options.javaAgentPath}`,
+  `-Dotel.javaagent.configuration-file=${options.agentPropertiesPath}`,
+  `-Dlogging.config=${options.logbackConfigPath}`,
+  '-jar',
+  options.appJar
+];
+
 export const launchJavaProcess = async (options: LaunchJavaOptions): Promise<{ pid: number; command: string }> => {
   await ensureDirectory(options.artifactsDir);
-  const args = [
-    `-javaagent:${options.javaAgentPath}=config=${options.agentPropertiesPath}`,
-    `-Dlogging.config=${options.logbackConfigPath}`,
-    '-jar',
-    options.appJar
-  ];
+  const args = buildJavaLaunchArgs(options);
   const command = ['java', ...args.map(quoteCommandArgument)].join(' ');
   const child = spawn('java', args, {
     cwd: options.cwd,

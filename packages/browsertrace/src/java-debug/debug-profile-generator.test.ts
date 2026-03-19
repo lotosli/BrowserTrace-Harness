@@ -35,6 +35,7 @@ describe('DebugProfileGenerator', () => {
 
     expect(profile.methodsInclude).toContain('OrderService[create,cancel]');
     expect(await readFile(profile.logbackConfigPath, 'utf8')).toContain('LoggingEventCompositeJsonEncoder');
+    expect(await readFile(profile.agentPropertiesPath, 'utf8')).toContain('otel.exporter.otlp.traces.endpoint=http://127.0.0.1:4318/v1/traces');
+    expect(await readFile(profile.agentPropertiesPath, 'utf8')).toContain('otel.exporter.otlp.protocol=http/protobuf');
   });
 });
-

@@ -1,20 +1,27 @@
 import path from 'node:path';
-import type { Browser, BrowserContext, Page, Response } from 'playwright-core';
+import type { Browser, BrowserContext, Page, Request, Response } from 'playwright-core';
 import type { AppRuntimeConfig } from '../config/config-schema.js';
 import { launchShadowBrowser } from '../browser/playwright-adapter.js';
 import { buildPropagationScript } from '../trace/http-header-injector.js';
 import { ShadowValidator } from './shadow-validator.js';
 import { HarnessError } from '../types/errors.js';
 import type { RunContext } from '../cli/run-context.js';
-import type { NetworkSummaryRecord, ValidationResult } from '../types/runtime.js';
+import type {
+  ConsoleEntryRecord,
+  NetworkDetailedRecord,
+  NetworkSummaryRecord,
+  ValidationResult
+} from '../types/runtime.js';
 import type { ShadowBundle } from '../types/session.js';
+import { enrichResponseBody, shouldCaptureResponseBody } from '../runtime/ai-debug-artifacts.js';
 
 type RehydratedShadow = {
   browser: Browser;
   context: BrowserContext;
   page: Page;
   network: NetworkSummaryRecord[];
-  consoleMessages: string[];
+  networkDetailed: NetworkDetailedRecord[];
+  consoleEntries: ConsoleEntryRecord[];
   exceptions: string[];
   validation: ValidationResult;
   propagationFilePath: string;
@@ -48,23 +55,100 @@ export class ShadowBootstrapper {
   ): Promise<RehydratedShadow> {
     const { browser, context, page } = await launchShadowBrowser(runContext.config);
     const network: NetworkSummaryRecord[] = [];
-    const consoleMessages: string[] = [];
+    const networkDetailed: NetworkDetailedRecord[] = [];
+    const consoleEntries: ConsoleEntryRecord[] = [];
     const exceptions: string[] = [];
     const responses: Response[] = [];
+    const pendingRequests = new Map<Request, NetworkDetailedRecord>();
+    let requestSequence = 0;
 
-    page.on('response', async (response) => {
-      responses.push(response);
+    const finalizeRequestRecord = (record: NetworkDetailedRecord) => {
+      networkDetailed.push(record);
       network.push({
-        url: response.url(),
-        method: response.request().method(),
-        status: response.status(),
-        ok: response.ok(),
+        url: record.url,
+        method: record.method,
+        status: record.status,
+        ok: record.ok,
+        traceId: record.traceId,
+        spanId: record.spanId
+      });
+    };
+
+    page.on('request', async (request) => {
+      const headers = await request.allHeaders().catch(() => undefined);
+      pendingRequests.set(request, {
+        sequence: ++requestSequence,
+        url: request.url(),
+        method: request.method(),
+        resourceType: request.resourceType(),
+        startedAt: new Date().toISOString(),
+        requestHeaders: headers,
+        requestBodyText: request.postData() ?? undefined,
         traceId: runContext.traceHeaders.traceparent?.split('-')[1],
         spanId: runContext.traceHeaders.traceparent?.split('-')[2]
       });
     });
+
+    page.on('response', async (response) => {
+      responses.push(response);
+      const request = response.request();
+      const record = pendingRequests.get(request) ?? {
+        sequence: ++requestSequence,
+        url: request.url(),
+        method: request.method(),
+        resourceType: request.resourceType(),
+        startedAt: new Date().toISOString(),
+        traceId: runContext.traceHeaders.traceparent?.split('-')[1],
+        spanId: runContext.traceHeaders.traceparent?.split('-')[2]
+      };
+      const finishedAt = new Date().toISOString();
+      const responseHeaders = await response.allHeaders().catch(() => response.headers());
+      const bodyPayload = shouldCaptureResponseBody({
+        resourceType: record.resourceType,
+        url: record.url,
+        responseHeaders
+      })
+        ? enrichResponseBody(await response.text().catch(() => undefined))
+        : {};
+
+      record.status = response.status();
+      record.statusText = response.statusText();
+      record.ok = response.ok();
+      record.finishedAt = finishedAt;
+      record.durationMs = Math.max(0, new Date(finishedAt).getTime() - new Date(record.startedAt).getTime());
+      record.responseHeaders = responseHeaders;
+      record.responseBodyText = bodyPayload.text;
+      record.responseBodyJson = bodyPayload.json;
+      pendingRequests.delete(request);
+      finalizeRequestRecord(record);
+    });
+    page.on('requestfailed', async (request) => {
+      const record = pendingRequests.get(request) ?? {
+        sequence: ++requestSequence,
+        url: request.url(),
+        method: request.method(),
+        resourceType: request.resourceType(),
+        startedAt: new Date().toISOString(),
+        traceId: runContext.traceHeaders.traceparent?.split('-')[1],
+        spanId: runContext.traceHeaders.traceparent?.split('-')[2]
+      };
+      const finishedAt = new Date().toISOString();
+      record.finishedAt = finishedAt;
+      record.durationMs = Math.max(0, new Date(finishedAt).getTime() - new Date(record.startedAt).getTime());
+      record.failureText = request.failure()?.errorText;
+      record.ok = false;
+      record.requestHeaders ??= await request.allHeaders().catch(() => undefined);
+      record.requestBodyText ??= request.postData() ?? undefined;
+      pendingRequests.delete(request);
+      finalizeRequestRecord(record);
+    });
     page.on('console', (message) => {
-      consoleMessages.push(`${message.type()}: ${message.text()}`);
+      consoleEntries.push({
+        type: message.type(),
+        text: message.text(),
+        timestamp: new Date().toISOString(),
+        location: message.location()
+      });
     });
     page.on('pageerror', (error) => {
       exceptions.push(error.message);
@@ -115,7 +199,8 @@ export class ShadowBootstrapper {
         context,
         page,
         network,
-        consoleMessages,
+        networkDetailed,
+        consoleEntries,
         exceptions,
         validation,
         propagationFilePath
@@ -126,4 +211,3 @@ export class ShadowBootstrapper {
     }
   }
 }
-

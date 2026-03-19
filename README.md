@@ -1,64 +1,70 @@
 # BrowserTrace Harness
 
-`browsertrace` is a local CLI for shadow-headless browser debugging, W3C trace propagation, Java OTel debug setup, and trace/log correlation.
+BrowserTrace is a local CLI for replaying browser flows in a shadow headless browser, propagating W3C trace context, and correlating frontend requests with Java traces and logs.
 
-## Workspace
+## What is in this repo
 
-- `packages/browsertrace`: TypeScript CLI implementation
-- `apps/demo-service`: Spring Boot demo app for end-to-end verification
-- `apps/demo-frontend`: React demo UI for dropdowns, API calls, and error scenarios
-- `ops`: local observability stack examples for Tempo, Loki, Promtail, and the OTel Collector
+- `packages/browsertrace`: the TypeScript CLI
+- `apps/demo-service`: a Spring Boot demo backend
+- `apps/demo-frontend`: a React demo frontend
+- `ops`: a local Tempo + Loki + Collector + Promtail stack
 
-## Quick Start
+## Core workflow
 
-1. Install dependencies: `pnpm install`
-2. Copy the example config to `~/.browsertrace/config.yaml`
-3. Build the CLI: `pnpm build`
-4. Build the demo app: `cd apps/demo-service && mvn package`
-5. Start the React demo: `cd apps/demo-frontend && pnpm dev`
+1. Attach to a real Chrome tab with `session ensure`
+2. Recreate the session in a fresh headless browser with `browser goto|click|fill|wait|screenshot`
+3. Export traces to OTLP, JSONL, or both
+4. Pull correlated traces and logs from Tempo and Loki
 
-## Release Builds
+## AI-friendly runtime output
 
-Build standalone CLI binaries for the supported OS and CPU targets:
+Each browser run writes a compact debugging bundle under `~/.browsertrace/artifacts/<run-id>/runtime`, including:
 
-- `pnpm build:release`
+- `ai-summary.json`: top-level conclusion for the run
+- `page-state.json`: UI state after the action
+- `action-network-detailed.json`: only the requests triggered by the action
+- `action-console-detailed.json`: only the console output from the action window
+- `page.html`: final DOM snapshot
+- `post-action.png`: final screenshot
 
-Artifacts are written to `packages/browsertrace/releases`:
+## Quick start
 
-- `browsertrace-darwin-arm64`
-- `browsertrace-darwin-x64`
-- `browsertrace-linux-arm64`
-- `browsertrace-linux-x64`
-- `browsertrace-win-arm64.exe`
-- `browsertrace-win-x64.exe`
+```bash
+pnpm install
+pnpm build
+cd apps/demo-service && mvn package
+docker compose -f ops/docker-compose.yaml up -d
+```
 
-## CLI Highlights
+Then start the demo apps:
 
+```bash
+cd apps/demo-service && java -jar target/demo-service-0.1.0.jar
+cd apps/demo-frontend && pnpm dev
+```
+
+## Useful commands
+
+- `browsertrace doctor`
 - `browsertrace session ensure`
-- `browsertrace browser goto|click|fill|wait|screenshot`
+- `browsertrace browser click`
 - `browsertrace debug call-api`
 - `browsertrace java-debug scan-methods|gen-profile|run`
 - `browsertrace trace lookup|grep-logs`
-- `browsertrace doctor`
 
-## Trace Output
+## Release builds
 
-Every root-run command supports:
+Build standalone CLI binaries:
 
-- `--trace-output otlp|jsonl|both`
-- `--trace-output-path /path/to/file.jsonl`
+```bash
+pnpm build:release
+```
 
-When `jsonl` output is enabled, spans are written as one JSON object per line either under the run artifact directory or to the explicit output path.
+Artifacts are written to `packages/browsertrace/releases`.
 
-## Local Stack
+## Docs
 
-The `ops/docker-compose.yaml` file provides a reference local stack:
-
-- Tempo for traces
-- Loki for logs
-- Promtail to ingest demo-service logs
-- OpenTelemetry Collector to receive OTLP traces
-
-## Chinese Demo Guide
-
-See [docs/demo-react-usage.zh-CN.md](/Users/lotosli/Documents/BrowserTrace%20Harness/docs/demo-react-usage.zh-CN.md) for the Java + React example and BrowserTrace CLI walkthrough in Chinese.
+- [Architecture](docs/architecture.md)
+- [Testing Guide](docs/testing.md)
+- [Latest Local Test Results](docs/test-results.md)
+- [Chinese Demo Guide](docs/demo-react-usage.zh-CN.md)

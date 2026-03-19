@@ -19,7 +19,13 @@ export const runBrowserAction = async (
     consolePath: path.join(runContext.artifactWriter.paths.runtimeDir, 'console.json'),
     networkPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'network.json'),
     exceptionsPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'exceptions.json'),
-    resultPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'result.json')
+    resultPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'result.json'),
+    postActionScreenshotPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'post-action.png'),
+    pageHtmlPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'page.html'),
+    pageStatePath: path.join(runContext.artifactWriter.paths.runtimeDir, 'page-state.json'),
+    consoleDetailedPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'console-detailed.json'),
+    networkDetailedPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'network-detailed.json'),
+    aiSummaryPath: path.join(runContext.artifactWriter.paths.runtimeDir, 'ai-summary.json')
   };
 
   try {
@@ -54,6 +60,11 @@ export const runBrowserAction = async (
     });
 
     stepSpan.setAttribute('browser.current_url', page.url());
+    if (action.type !== 'screenshot') {
+      await page.screenshot({ path: artifacts.postActionScreenshotPath, fullPage: true }).catch(() => undefined);
+    } else {
+      artifacts.postActionScreenshotPath = artifacts.screenshotPath;
+    }
     stepSpan.end();
     return {
       currentUrl: page.url(),
@@ -61,6 +72,7 @@ export const runBrowserAction = async (
       screenshotPath: artifacts.screenshotPath
     };
   } catch (error) {
+    await page.screenshot({ path: path.join(runContext.artifactWriter.paths.runtimeDir, 'error.png'), fullPage: true }).catch(() => undefined);
     stepSpan.recordException(error instanceof Error ? error : new Error('Unknown browser step failure'));
     stepSpan.setStatus({ code: otelApi.SpanStatusCode.ERROR, message: error instanceof Error ? error.message : 'Unknown error' });
     stepSpan.end();

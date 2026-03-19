@@ -133,3 +133,21 @@ CLI 跑完后，可以重点看这些产物目录：
 - `runtime/console.json`：页面 console 输出
 - `correlation/request-trace-map.json`：请求到 trace 的映射
 - `trace-events.jsonl`：本地 JSONL trace 文件
+
+如果你要把结果直接喂给大模型，优先看下面这些新产物：
+
+- `runtime/ai-summary.json`：AI 友好的单文件摘要，直接给出 `outcome.category`、失败原因、根请求、页面错误标题、trace 信息
+- `runtime/page-state.json`：点击后页面状态快照，包含 `data-testid` 元素、下拉框选中值、HTTP 状态 chip、错误文案、响应面板 JSON
+- `runtime/action-network-detailed.json`：只保留这次动作触发的请求，避免初始化流量干扰
+- `runtime/action-console-detailed.json`：只保留这次动作窗口内的 console 错误
+- `runtime/page.html`：点击后的完整页面 HTML
+- `runtime/post-action.png`：点击后的页面截图
+- `correlation/tempo-trace.json`：自动拉取到的 Tempo trace
+- `correlation/loki-trace-logs.json`：自动拉取到的 Loki 日志
+
+推荐排查顺序：
+
+1. 先看 `runtime/ai-summary.json`
+2. 再看 `runtime/action-network-detailed.json`
+3. 然后看 `runtime/page-state.json`
+4. 需要时再下钻 `correlation/tempo-trace.json` 和 `correlation/loki-trace-logs.json`

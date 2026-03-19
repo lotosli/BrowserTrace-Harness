@@ -36,6 +36,8 @@ apps:
     allow_api_origins:
       - http://127.0.0.1:8083
       - http://localhost:8083
+      - http://127.0.0.1:8084
+      - http://localhost:8084
     validation:
       page_selector: "[data-testid='demo-app']"
       api_url: "http://127.0.0.1:8083/api/demo/options/apps"

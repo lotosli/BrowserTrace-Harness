@@ -55,11 +55,7 @@ public class DemoScenarioService {
           request.appId(),
           scenarioId,
           "已返回用户资料。",
-          Map.of(
-              "module", request.appId(),
-              "user", Map.of("id", "demo-user", "name", "BrowserTrace User", "role", "developer"),
-              "updatedAt", Instant.now().toString()
-          ),
+          buildProfilePayload(request.appId()),
           diagnostics
       );
       case "servicegraph_ok" -> new DemoSuccessResponse(
@@ -67,10 +63,7 @@ public class DemoScenarioService {
           request.appId(),
           scenarioId,
           "已返回服务依赖图。",
-          Map.of(
-              "module", request.appId(),
-              "graph", serviceGraphService.describe(request.appId() + "-service")
-          ),
+          buildServiceGraphPayload(request.appId()),
           diagnostics
       );
       case "bad_request" -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "缺少业务过滤条件，无法处理请求。");
@@ -83,22 +76,49 @@ public class DemoScenarioService {
             request.appId(),
             scenarioId,
             "该响应会晚于前端超时时间返回。",
-            Map.of(
-                "module", request.appId(),
-                "completedAt", Instant.now().toString()
-            ),
+            buildSlowPayload(request.appId()),
             diagnostics
         );
       }
-      case "bad_payload" -> Map.of(
-          "status", "ok",
-          "module", request.appId(),
-          "scenarioId", scenarioId,
-          "message", "故意返回不符合前端预期的结构。",
-          "diagnostics", diagnostics
-      );
+      case "bad_payload" -> buildInvalidPayload(request.appId(), scenarioId, diagnostics);
       default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "不支持的场景: " + scenarioId);
     };
+  }
+
+  public Map<String, Object> buildProfilePayload(String appId) {
+    return Map.of(
+        "module", appId,
+        "user", createDemoUser(),
+        "updatedAt", Instant.now().toString()
+    );
+  }
+
+  public Map<String, Object> buildServiceGraphPayload(String appId) {
+    return Map.of(
+        "module", appId,
+        "graph", serviceGraphService.describe(appId + "-service")
+    );
+  }
+
+  public Map<String, Object> buildSlowPayload(String appId) {
+    return Map.of(
+        "module", appId,
+        "completedAt", Instant.now().toString()
+    );
+  }
+
+  public Map<String, Object> buildInvalidPayload(String appId, String scenarioId, DemoDiagnostics diagnostics) {
+    return Map.of(
+        "status", "ok",
+        "module", appId,
+        "scenarioId", scenarioId,
+        "message", "故意返回不符合前端预期的结构。",
+        "diagnostics", diagnostics
+    );
+  }
+
+  public Map<String, Object> createDemoUser() {
+    return Map.of("id", "demo-user", "name", "BrowserTrace User", "role", "developer");
   }
 
   private DemoDiagnostics diagnostics(HttpServletRequest request) {

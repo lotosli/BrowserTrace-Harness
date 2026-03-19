@@ -18,6 +18,29 @@ const groupMethods = (methods: JavaMethodDescriptor[]): string =>
     .map(([className, methodNames]) => `${className}[${Array.from(new Set(methodNames)).join(',')}]`)
     .join(';');
 
+const resolveOtlpAgentProperties = (endpoint?: string): string[] => {
+  if (!endpoint) {
+    return [
+      'otel.exporter.otlp.protocol=http/protobuf',
+      'otel.exporter.otlp.endpoint=http://127.0.0.1:4318'
+    ];
+  }
+
+  const parsed = new URL(endpoint);
+  const normalizedPath = parsed.pathname.replace(/\/+$/, '');
+  if (normalizedPath.endsWith('/v1/traces')) {
+    return [
+      'otel.exporter.otlp.protocol=http/protobuf',
+      `otel.exporter.otlp.traces.endpoint=${endpoint}`
+    ];
+  }
+
+  return [
+    'otel.exporter.otlp.protocol=http/protobuf',
+    `otel.exporter.otlp.endpoint=${endpoint}`
+  ];
+};
+
 export class DebugProfileGenerator {
   public async generate(
     config: BrowserTraceConfig,
@@ -38,14 +61,18 @@ export class DebugProfileGenerator {
           'otel.instrumentation.common.default-enabled=false',
           'otel.instrumentation.servlet.enabled=true',
           'otel.instrumentation.spring-webmvc.enabled=true',
+          'otel.instrumentation.methods.enabled=true',
           'otel.instrumentation.logback-mdc.enabled=true',
           'otel.instrumentation.common.experimental.controller-telemetry.enabled=false',
           'otel.instrumentation.common.experimental.view-telemetry.enabled=false',
           'otel.instrumentation.experimental.span-suppression-strategy=none',
           'otel.propagators=tracecontext,baggage',
           'otel.javaagent.logging=application',
+          'otel.traces.exporter=otlp',
+          'otel.metrics.exporter=none',
+          'otel.logs.exporter=none',
           `otel.service.name=${serviceName}`,
-          `otel.exporter.otlp.endpoint=${config.otel.endpoint ?? 'http://127.0.0.1:4318'}`,
+          ...resolveOtlpAgentProperties(config.otel.endpoint),
           `otel.instrumentation.methods.include=${methodsInclude}`
         ].join('\n') + '\n',
         'utf8'

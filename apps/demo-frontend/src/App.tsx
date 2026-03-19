@@ -266,9 +266,9 @@ export default function App() {
         </div>
 
         <div className="status-row">
-          <span className="status-chip">API Base: {API_BASE_URL}</span>
-          <span className="status-chip">HTTP: {httpStatus}</span>
-          <span className="status-chip">预期: {selectedScenario?.expectedStatus ?? '未选择'}</span>
+          <span className="status-chip" data-testid="api-base-chip">API Base: {API_BASE_URL}</span>
+          <span className="status-chip" data-testid="http-status-chip">HTTP: {httpStatus}</span>
+          <span className="status-chip" data-testid="expected-status-chip">预期: {selectedScenario?.expectedStatus ?? '未选择'}</span>
         </div>
 
         <button
@@ -285,13 +285,17 @@ export default function App() {
       <section className="result-card">
         <div className="result-header">
           <h2>调用结果</h2>
-          {failure ? <span className="error-badge">{failure.title}</span> : <span className="success-badge">状态稳定</span>}
+          {failure ? (
+            <span className="error-badge" data-testid="result-status-badge">{failure.title}</span>
+          ) : (
+            <span className="success-badge" data-testid="result-status-badge">状态稳定</span>
+          )}
         </div>
         <p className="result-hint">
           预置场景包括 200 正确、400、404、500、客户端超时，以及 HTTP 200 但返回结构错误。
         </p>
         <pre data-testid="response-panel">{JSON.stringify(responseBody ?? { message: '点击按钮后查看结果。' }, null, 2)}</pre>
-        {failure ? <p className="error-detail">{failure.detail}</p> : null}
+        {failure ? <p className="error-detail" data-testid="error-detail">{failure.detail}</p> : null}
       </section>
     </main>
   );
