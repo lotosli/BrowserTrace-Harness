@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+.idea/
+.vscode/
+coverage/
+artifacts/
+releases/
+packages/browsertrace/dist-pkg/
+packages/browsertrace/releases/
+packages/browsertrace/release-test/
+playwright-report/
+test-results/
+*.log
+apps/demo-service/target/

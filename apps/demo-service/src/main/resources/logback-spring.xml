@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_FILE:-logs/demo-service.log}</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_FILE:-logs/demo-service}.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>7</maxHistory>
+    </rollingPolicy>
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+      <providers>
+        <timestamp />
+        <pattern>
+          <pattern>
+            {
+            "level":"%level",
+            "logger":"%logger",
+            "thread":"%thread",
+            "message":"%message",
+            "trace_id":"%X{trace_id:-}",
+            "span_id":"%X{span_id:-}",
+            "trace_flags":"%X{trace_flags:-}",
+            "spec_id":"%X{spec_id:-}",
+            "run_id":"%X{run_id:-}",
+            "page_url":"%X{page_url:-}"
+            }
+          </pattern>
+        </pattern>
+      </providers>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="JSON" />
+  </root>
+</configuration>
+

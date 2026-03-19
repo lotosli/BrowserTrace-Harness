@@ -1,0 +1,39 @@
+chrome:
+  cdp_url: http://127.0.0.1:9222
+
+artifacts:
+  base_dir: ~/.browsertrace/artifacts
+
+otel:
+  endpoint: http://127.0.0.1:4318/v1/traces
+  service_name: browsertrace
+  propagators:
+    - tracecontext
+    - baggage
+
+trace:
+  output_default: otlp
+
+lookup:
+  tempo:
+    base_url: http://127.0.0.1:3200
+  loki:
+    base_url: http://127.0.0.1:3100
+    query_labels:
+      service_name: demo-service
+
+apps:
+  observability:
+    allow_api_origins:
+      - http://127.0.0.1:8083
+    validation:
+      page_selector: "[data-testid='user-avatar']"
+      api_url: "http://127.0.0.1:8083/api/me"
+      login_url_contains: "/login"
+      critical_api_patterns:
+        - "/api/servicegraph"
+
+java_debug:
+  default_profile_dir: ~/.browsertrace/java-debug
+  default_service_name_suffix: "-debug"
+  log_format: json

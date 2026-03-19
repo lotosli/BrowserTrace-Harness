@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BrowserTrace Demo</title>
+    <style>
+      :root {
+        --bg: #f7f2ea;
+        --fg: #1f2a37;
+        --accent: #0d8b6f;
+        --panel: rgba(255, 255, 255, 0.85);
+      }
+
+      body {
+        margin: 0;
+        font-family: "IBM Plex Sans", "Avenir Next", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(13, 139, 111, 0.2), transparent 35%),
+          linear-gradient(135deg, #f7f2ea, #e7eef5);
+        color: var(--fg);
+      }
+
+      main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+      }
+
+      .hero {
+        background: var(--panel);
+        border: 1px solid rgba(31, 42, 55, 0.1);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 12px 40px rgba(31, 42, 55, 0.08);
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 999px;
+        background: rgba(13, 139, 111, 0.14);
+        padding: 8px 14px;
+        margin-bottom: 18px;
+      }
+
+      button {
+        border: none;
+        background: var(--accent);
+        color: white;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+
+      pre {
+        background: rgba(31, 42, 55, 0.95);
+        color: #eff7f8;
+        padding: 16px;
+        border-radius: 16px;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="pill" data-testid="user-avatar">
+          <strong>Logged in</strong>
+          <span>browsertrace-user</span>
+        </div>
+        <h1>Demo Observability Page</h1>
+        <p>Use this page as a same-origin target for shadow-headless validation and propagated browser requests.</p>
+        <button id="refresh">Refresh Service Graph</button>
+        <pre id="result">Waiting for fetch...</pre>
+      </section>
+    </main>
+    <script>
+      const result = document.getElementById('result');
+      async function loadData() {
+        const response = await fetch('/api/servicegraph?service=order-service', {
+          credentials: 'include'
+        });
+        const body = await response.json();
+        result.textContent = JSON.stringify(body, null, 2);
+      }
+      document.getElementById('refresh').addEventListener('click', loadData);
+      loadData().catch((error) => {
+        result.textContent = String(error);
+      });
+    </script>
+  </body>
+</html>
+

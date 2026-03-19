@@ -1,0 +1,11 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: demo-service
+
+logging:
+  file:
+    name: logs/demo-service.log
+
