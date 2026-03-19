@@ -75,7 +75,10 @@ const forwardStream = (stream, writer) =>
 
 const run = (command, args, cwd) =>
   new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
+    const commandToRun = process.platform === 'win32' ? 'cmd.exe' : command;
+    const commandArgs = process.platform === 'win32' ? ['/d', '/s', '/c', command, ...args] : args;
+
+    const child = spawn(commandToRun, commandArgs, {
       cwd,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: process.env
@@ -90,7 +93,7 @@ const run = (command, args, cwd) =>
         resolve();
         return;
       }
-      reject(new Error(`${command} ${args.join(' ')} exited with code ${code}`));
+      reject(new Error(`${commandToRun} ${commandArgs.join(' ')} exited with code ${code}`));
     });
     child.on('error', reject);
   });
