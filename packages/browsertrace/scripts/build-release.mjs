@@ -112,8 +112,10 @@ for (const target of selectedTargets) {
       target.pkgTarget,
       '--output',
       path.join(outputDir, target.name),
+      '--public',
       '--public-packages',
-      '*'
+      '*',
+      '--no-bytecode'
     ],
     packageDir
   );
