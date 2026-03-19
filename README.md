@@ -69,4 +69,5 @@ Artifacts are written to `packages/browsertrace/releases`.
 - [Latest Local Test Results](docs/test-results.md)
 - [AI Debug Run Samples](docs/examples/ai-debug-runs/README.md)
 - [New Java Project Onboarding](docs/java-project-onboarding.md)
+- [LLM Guide for Unfamiliar Java Codebases](docs/llm-unfamiliar-java-codebase.md)
 - [Chinese Demo Guide](docs/demo-react-usage.zh-CN.md)
