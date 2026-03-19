@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -26,9 +26,9 @@ jobs:
           version: 10.28.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
@@ -43,7 +43,7 @@ jobs:
     needs: test
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -51,25 +51,21 @@ jobs:
           version: 10.28.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build pkg bundle
-        run: pnpm --filter @browsertrace/browsertrace run build:release:bundle
+        working-directory: packages/browsertrace
+        run: pnpm run build:release:bundle
 
-      - name: Create release directory
-        run: mkdir -p packages/browsertrace/releases
-
-      - name: Build Linux x64 binary
-        run: pnpm exec pkg packages/browsertrace/dist-pkg/pkg-main.cjs --targets node18-linux-x64 --output packages/browsertrace/releases/browsertrace-linux-x64 --public-packages '*'
-
-      - name: Build Linux arm64 binary
-        run: pnpm exec pkg packages/browsertrace/dist-pkg/pkg-main.cjs --targets node18-linux-arm64 --output packages/browsertrace/releases/browsertrace-linux-arm64 --public-packages '*'
+      - name: Build Linux binaries
+        working-directory: packages/browsertrace
+        run: node ./scripts/build-release.mjs --platform linux --skip-checksums
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
@@ -85,7 +81,7 @@ jobs:
     needs: test
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -93,25 +89,21 @@ jobs:
           version: 10.28.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build pkg bundle
-        run: pnpm --filter @browsertrace/browsertrace run build:release:bundle
+        working-directory: packages/browsertrace
+        run: pnpm run build:release:bundle
 
-      - name: Create release directory
-        run: mkdir -p packages/browsertrace/releases
-
-      - name: Build macOS x64 binary
-        run: pnpm exec pkg packages/browsertrace/dist-pkg/pkg-main.cjs --targets node18-macos-x64 --output packages/browsertrace/releases/browsertrace-darwin-x64 --public-packages '*'
-
-      - name: Build macOS arm64 binary
-        run: pnpm exec pkg packages/browsertrace/dist-pkg/pkg-main.cjs --targets node18-macos-arm64 --output packages/browsertrace/releases/browsertrace-darwin-arm64 --public-packages '*'
+      - name: Build macOS binaries
+        working-directory: packages/browsertrace
+        run: node ./scripts/build-release.mjs --platform darwin --skip-checksums
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
@@ -127,7 +119,7 @@ jobs:
     needs: test
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -135,28 +127,21 @@ jobs:
           version: 10.28.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build pkg bundle
-        run: pnpm --filter @browsertrace/browsertrace run build:release:bundle
+        working-directory: packages/browsertrace
+        run: pnpm run build:release:bundle
 
-      - name: Create release directory
-        shell: bash
-        run: mkdir -p packages/browsertrace/releases
-
-      - name: Build Windows x64 binary
-        shell: bash
-        run: pnpm exec pkg packages/browsertrace/dist-pkg/pkg-main.cjs --targets node18-win-x64 --output packages/browsertrace/releases/browsertrace-win-x64.exe --public-packages '*'
-
-      - name: Build Windows arm64 binary
-        shell: bash
-        run: pnpm exec pkg packages/browsertrace/dist-pkg/pkg-main.cjs --targets node18-win-arm64 --output packages/browsertrace/releases/browsertrace-win-arm64.exe --public-packages '*'
+      - name: Build Windows binaries
+        working-directory: packages/browsertrace
+        run: node ./scripts/build-release.mjs --platform windows --skip-checksums
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
