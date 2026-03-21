@@ -141,6 +141,7 @@ Artifacts are written to `packages/browsertrace/releases`.
 
 - [Architecture](docs/architecture.md)
 - [Agent Development Workflow](docs/agent-fullstack-workflow.md)
+- [Skills Index](skills/README.md)
 - [Testing Guide](docs/testing.md)
 - [Latest Local Test Results](docs/test-results.md)
 - [AI Debug Run Samples](docs/examples/ai-debug-runs/README.md)
