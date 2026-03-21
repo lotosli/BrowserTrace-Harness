@@ -40,6 +40,30 @@ docker compose -f ops/docker-compose.yaml up -d
 
 `browsertrace run` and `run-session start` can also start the demo apps directly from the provided V2 specs.
 
+## V2 prerequisites
+
+The V2 `run` and `run-session` commands use an internal Python sidecar that imports `browser-use`.
+
+Before using V2 commands, prepare a Python environment that can import `browser_use`.
+
+The simplest setup is:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install browser-use
+```
+
+`browsertrace` will try these Python locations in order:
+
+1. `spec.engine.pythonExecutable`
+2. `config.browser_use.python_executable`
+3. `./.venv/bin/python`
+4. `python3`
+5. `python`
+
+If you do not prepare one of these, V2 commands such as `browsertrace run` and `browsertrace run-session start` will fail with `engine_not_available`.
+
 ## Useful commands
 
 - `browsertrace run specs/example.yaml --json`
@@ -116,6 +140,7 @@ Artifacts are written to `packages/browsertrace/releases`.
 ## Docs
 
 - [Architecture](docs/architecture.md)
+- [Agent Development Workflow](docs/agent-fullstack-workflow.md)
 - [Testing Guide](docs/testing.md)
 - [Latest Local Test Results](docs/test-results.md)
 - [AI Debug Run Samples](docs/examples/ai-debug-runs/README.md)
