@@ -2,48 +2,50 @@
 
 ## Overview
 
-BrowserTrace has four main parts:
+BrowserTrace V2 has five main parts:
 
-- `browsertrace` CLI: command parsing, run context, trace export, artifact writing
-- Session broker: attaches to Chrome over CDP and extracts a reusable session bundle
-- Shadow runtime: rehydrates the session in a fresh headless Chromium and executes actions
-- Observability stack: OTLP Collector, Tempo, Loki, and Promtail
+- `browsertrace` CLI: agent-facing command surface and JSON contracts
+- Scenario runtime: spec loading, service orchestration, step execution, artifact writing
+- Browser engine: internal `browser-use` Python sidecar plus persistent CDP sessions
+- Session judge layer: step-local verdicts plus session-level scenario aggregation
+- Observability stack: OTLP ingest plus Tempo/Loki query backends
 
 ## High-level flow
 
 ```mermaid
 flowchart LR
-  A["Visible Chrome tab"] --> B["session ensure"]
-  B --> C["Session bundle"]
-  C --> D["Headless shadow browser"]
-  D --> E["browser click/fill/goto"]
-  E --> F["AI-friendly artifacts"]
-  E --> G["OTLP traces"]
-  G --> H["Collector"]
-  H --> I["Tempo"]
-  D --> J["Demo backend"]
-  J --> K["JSON logs"]
-  K --> L["Promtail"]
+  A["Agent"] --> B["browsertrace run or run-session"]
+  B --> C["Spec + Setup Services"]
+  C --> D["browser-use Engine"]
+  D --> E["Browser Steps"]
+  E --> F["Artifacts"]
+  E --> G["Traceparent + Baggage"]
+  G --> H["Frontend Requests"]
+  H --> I["Java Backend"]
+  I --> J["OTLP Collector"]
+  J --> K["Tempo"]
+  I --> L["Logs / OTLP or File"]
   L --> M["Loki"]
+  F --> N["Verdict + Diagnosis"]
+  K --> N
+  M --> N
 ```
 
 ## Main runtime model
 
-### 1. `session ensure`
+### 1. `run`
 
-- Attaches to Chrome/Chromium over CDP
-- Matches a page by origin and URL proximity
-- Extracts cookies, local storage, session storage, and token-like values
-- Saves a logical session bundle under `~/.browsertrace/sessions/<session-id>`
+- Loads one scenario spec
+- Starts configured services if needed
+- Runs all browser steps end to end
+- Writes one run report with correlated trace/log artifacts
 
-### 2. `browser *`
+### 2. `run-session *`
 
-- Loads the saved session bundle
-- Starts a fresh headless Chromium
-- Rehydrates cookies and storage
-- Installs `traceparent` and `baggage` injection for same-origin and allowlisted requests
-- Executes the requested step
-- Writes runtime artifacts and trace metadata
+- Starts detached services and a persistent browser session
+- Resumes one step or a contiguous step range through `--through-step`
+- Stores per-step history under one persistent session manifest
+- Computes session-level scenario verdicts through `run-session judge`
 
 ### 3. `java-debug *`
 
@@ -58,17 +60,21 @@ flowchart LR
 - Queries Loki for logs
 - Correlates both sides using the shared `trace_id`
 
+### 5. `judge` and `diagnose`
+
+- `judge`: recomputes a single run verdict from stored artifacts
+- `diagnose`: summarizes the likely root cause for a single run
+- `run-session judge`: computes a scenario verdict from persistent session history
+
 ## Artifact model
 
 Each run writes to `~/.browsertrace/artifacts/<run-id>/`.
 
 Important subdirectories:
 
-- `attach/`: CDP page matching details
-- `bundle/`: extracted session summary
-- `shadow/`: propagation state and rehydration validation
 - `runtime/`: page state, network, console, screenshots, AI summary
 - `correlation/`: trace and log lookup outputs
+- `~/.browsertrace/run-sessions/<session-id>/`: persistent browser/service session state and step history
 
 ## AI-oriented design
 
@@ -85,4 +91,4 @@ The runtime layer intentionally writes two kinds of data:
   - `action-console-detailed.json`
   - `page-state.json`
 
-The goal is that an LLM can answer “what failed, where, and why?” from one run directory without reconstructing the whole story manually.
+The goal is that an LLM can answer “what failed, where, and why?” from one run directory, or from an accumulated persistent session, without reconstructing the whole story manually.

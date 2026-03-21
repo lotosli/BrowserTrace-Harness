@@ -5,7 +5,7 @@ This guide describes the right operating model for an LLM that is dropped into a
 The goal is not to brute-force every page or every parameter combination. The goal is to:
 
 1. discover the smallest useful set of flows
-2. replay one targeted action at a time
+2. execute one targeted scenario or step range at a time
 3. connect browser behavior to Java traces, Java methods, and logs
 
 ## Start with Discovery, Not Execution
@@ -108,39 +108,47 @@ browsertrace java-debug run \
   --json
 ```
 
-### 4. Capture the real browser session
+### 4. Build or update a scenario spec
 
-The LLM should assume a human has already opened the page and signed in if needed.
+The LLM should turn the discovered flow into a small V2 spec:
+
+- service startup commands
+- one ordered step list
+- one success signal
+- one or two representative failure signals
+
+### 5. Execute it through V2 commands
+
+One-shot run:
 
 ```bash
-browsertrace session ensure \
+browsertrace run docs/examples/v2/demo-profile-ok.yaml \
   --config config.browsertrace.yaml \
-  --app-name my-ui \
-  --url http://127.0.0.1:3000/orders \
-  --session-id my-ui-main \
   --json
 ```
 
-### 5. Replay one action
+Persistent session:
 
 ```bash
-browsertrace browser click \
+browsertrace run-session start docs/examples/v2/demo-profile-ok.yaml \
   --config config.browsertrace.yaml \
-  --app-name my-ui \
-  --session-id my-ui-main \
-  --selector "#search-button" \
-  --trace-output both \
+  --json
+```
+
+```bash
+browsertrace run-session resume <session-id> --through-step <step-id> \
+  --config config.browsertrace.yaml \
   --json
 ```
 
 ## How to Read the Result
 
-The LLM should read artifacts in this order:
+The LLM should read outputs in this order:
 
-1. `runtime/ai-summary.json`
-2. `runtime/page-state.json`
-3. `runtime/action-network-detailed.json`
-4. `runtime/action-console-detailed.json`
+1. `verdict`
+2. `diagnosis`
+3. `runtime/page-state.json`
+4. `runtime/action-network-detailed.json`
 5. Tempo trace output
 6. Loki log output
 
@@ -151,6 +159,7 @@ This order answers:
 - whether the page reported success, error, timeout, or schema mismatch
 - which trace ID should be followed into Java
 - which Java methods were executed
+- whether the session-level scenario has already been tainted by a prior failed attempt
 
 ## Do Not Brute-Force the UI
 

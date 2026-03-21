@@ -66,18 +66,9 @@ pnpm dev
 
 ## 用 BrowserTrace CLI 调试
 
-先启动带 CDP 的 Chrome：
+当前推荐优先使用 V2 的 `run` / `run-session` 命令，而不是手工执行 `session ensure` + `browser click`。
 
-```bash
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --remote-debugging-port=9222 \
-  --user-data-dir=/tmp/browsertrace-demo-chrome \
-  --no-first-run \
-  --no-default-browser-check \
-  "http://127.0.0.1:5173/?appId=orders&scenarioId=profile_ok"
-```
-
-然后执行 CLI：
+推荐流程：
 
 1. 健康检查
 
@@ -87,37 +78,40 @@ node packages/browsertrace/dist/cli/main.js doctor \
   --json
 ```
 
-2. 直接调用后端 API 并输出本地 trace JSONL
+2. 一次性运行成功场景
 
 ```bash
-node packages/browsertrace/dist/cli/main.js debug call-api \
+node packages/browsertrace/dist/cli/main.js run \
   --config ./config.example.yaml \
-  --app-name demo-react \
-  --url "http://127.0.0.1:8083/api/demo/options/apps" \
-  --trace-output jsonl \
+  docs/examples/v2/demo-profile-ok.yaml \
   --json
 ```
 
-3. 通过 CDP 绑定当前 Chrome 页面
+3. 启动持久 session
 
 ```bash
-node packages/browsertrace/dist/cli/main.js session ensure \
+node packages/browsertrace/dist/cli/main.js run-session start \
   --config ./config.example.yaml \
-  --app-name demo-react \
-  --url "http://127.0.0.1:5173/?appId=orders&scenarioId=profile_ok" \
-  --trace-output jsonl \
+  docs/examples/v2/demo-profile-ok.yaml \
   --json
 ```
 
-4. 让影子浏览器点击页面按钮，触发真实前端请求
+4. 推进到某个中间步骤
 
 ```bash
-node packages/browsertrace/dist/cli/main.js browser click \
+node packages/browsertrace/dist/cli/main.js run-session resume \
   --config ./config.example.yaml \
-  --app-name demo-react \
-  --session-id <上一步的 session_id> \
-  --selector "[data-testid='run-button']" \
-  --trace-output jsonl \
+  <上一步返回的 session_id> \
+  --through-step select-scenario \
+  --json
+```
+
+5. 汇总 session 级判定
+
+```bash
+node packages/browsertrace/dist/cli/main.js run-session judge \
+  --config ./config.example.yaml \
+  <session_id> \
   --json
 ```
 
@@ -125,10 +119,6 @@ node packages/browsertrace/dist/cli/main.js browser click \
 
 CLI 跑完后，可以重点看这些产物目录：
 
-- `attach/pages.json`：CDP 发现的页面列表
-- `attach/match-result.json`：命中的页面
-- `bundle/extract-summary.json`：提取到的 Cookie 和 Storage 摘要
-- `shadow/propagation.json`：注入到页面的 `traceparent` 和 `baggage`
 - `runtime/network.json`：浏览器动作期间的网络记录
 - `runtime/console.json`：页面 console 输出
 - `correlation/request-trace-map.json`：请求到 trace 的映射

@@ -1,6 +1,6 @@
 # BrowserTrace Harness
 
-BrowserTrace is a local CLI for replaying browser flows in a shadow headless browser, propagating W3C trace context, and correlating frontend requests with Java traces and logs.
+BrowserTrace is an agent-native CLI for running full-stack browser scenarios, propagating W3C trace context, and correlating frontend behavior with backend traces, logs, screenshots, and DOM state.
 
 ## What is in this repo
 
@@ -11,10 +11,12 @@ BrowserTrace is a local CLI for replaying browser flows in a shadow headless bro
 
 ## Core workflow
 
-1. Attach to a real Chrome tab with `session ensure`
-2. Recreate the session in a fresh headless browser with `browser goto|click|fill|wait|screenshot`
-3. Export traces to OTLP, JSONL, or both
-4. Pull correlated traces and logs from Tempo and Loki
+1. Define a scenario spec in YAML or JSON
+2. Let `browsertrace run` or `browsertrace run-session` start the target services
+3. Execute browser steps through the internal `browser-use` backend
+4. Inject `traceparent` and `baggage` into frontend requests
+5. Pull correlated traces and logs from Tempo and Loki
+6. Return machine-readable `verdict`, `diagnosis`, and `artifacts`
 
 ## AI-friendly runtime output
 
@@ -36,12 +38,7 @@ cd apps/demo-service && mvn package
 docker compose -f ops/docker-compose.yaml up -d
 ```
 
-Then start the demo apps:
-
-```bash
-cd apps/demo-service && java -jar target/demo-service-0.1.0.jar
-cd apps/demo-frontend && pnpm dev
-```
+`browsertrace run` and `run-session start` can also start the demo apps directly from the provided V2 specs.
 
 ## Useful commands
 
@@ -56,15 +53,13 @@ cd apps/demo-frontend && pnpm dev
 - `browsertrace judge <run-id> --json`
 - `browsertrace diagnose <run-id> --json`
 - `browsertrace doctor`
-- `browsertrace session ensure`
-- `browsertrace browser click`
 - `browsertrace debug call-api`
 - `browsertrace java-debug scan-methods|gen-profile|run`
 - `browsertrace trace lookup|grep-logs`
 
 ## Agent-native V2 flow
 
-The new V2 entrypoint is `browsertrace run <spec> --json`.
+The preferred V2 entrypoints are `browsertrace run <spec> --json` and `browsertrace run-session ... --json`.
 
 - The agent starts or lets `browsertrace` start the target services
 - `browsertrace` uses the internal `browser-use` backend to drive the browser
@@ -95,6 +90,13 @@ This mode keeps browser and service state alive across commands so an agent can:
 4. compute a session-level scenario verdict from accumulated history
 5. diagnose individual step runs
 6. stop the session when finished
+
+The recommended split is:
+
+- `run`: one-shot scenario execution and diagnosis
+- `run-session`: persistent, stepwise execution for iterative coding/debugging loops
+- `judge`: recompute a single run verdict from stored artifacts
+- `run-session judge`: compute a scenario verdict from accumulated session history
 
 Sample V2 specs live at:
 

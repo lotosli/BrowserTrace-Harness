@@ -22,12 +22,13 @@ Start the observability stack:
 docker compose -f ops/docker-compose.yaml up -d
 ```
 
-Start the demo backend and frontend:
+Build the demo backend:
 
 ```bash
-cd apps/demo-service && java -jar target/demo-service-0.1.0.jar
-cd apps/demo-frontend && pnpm dev
+mvn -f apps/demo-service/pom.xml package
 ```
+
+You can either start backend/frontend manually or let the V2 specs do it for you.
 
 If you want method-level Java spans, start the backend through the CLI:
 
@@ -45,52 +46,59 @@ node packages/browsertrace/dist/cli/main.js java-debug run \
   --json
 ```
 
-## Sample browser tests
+## Sample V2 runs
 
-### 400
+### One-shot success run
 
 ```bash
-node packages/browsertrace/dist/cli/main.js browser click \
+node packages/browsertrace/dist/cli/main.js run \
+  docs/examples/v2/demo-profile-ok.yaml \
   --config config.example.yaml \
-  --app-name demo-react \
-  --session-id demo-react-bad-request-5174 \
-  --selector "[data-testid='run-button']" \
-  --trace-output jsonl \
   --json
 ```
 
-### 500
+### One-shot failure run
 
 ```bash
-node packages/browsertrace/dist/cli/main.js browser click \
+node packages/browsertrace/dist/cli/main.js run \
+  docs/examples/v2/demo-server-error.yaml \
   --config config.example.yaml \
-  --app-name demo-react \
-  --session-id demo-react-server-error-5174 \
-  --selector "[data-testid='run-button']" \
-  --trace-output jsonl \
   --json
 ```
 
-### Invalid 200 payload
+### Persistent session through-step run
 
 ```bash
-node packages/browsertrace/dist/cli/main.js browser click \
+node packages/browsertrace/dist/cli/main.js run-session start \
+  docs/examples/v2/demo-profile-ok.yaml \
+  --session-id demo-v2 \
   --config config.example.yaml \
-  --app-name demo-react \
-  --session-id demo-react-bad-payload-5174 \
-  --selector "[data-testid='run-button']" \
-  --trace-output jsonl \
+  --json
+```
+
+```bash
+node packages/browsertrace/dist/cli/main.js run-session resume \
+  demo-v2 \
+  --through-step select-scenario \
+  --config config.example.yaml \
+  --json
+```
+
+```bash
+node packages/browsertrace/dist/cli/main.js run-session judge \
+  demo-v2 \
+  --config config.example.yaml \
   --json
 ```
 
 ## What to inspect
 
-For AI-assisted debugging, inspect files in this order:
+For AI-assisted debugging, inspect outputs in this order:
 
-1. `runtime/ai-summary.json`
-2. `runtime/action-network-detailed.json`
+1. `verdict`
+2. `diagnosis`
 3. `runtime/page-state.json`
-4. `runtime/action-console-detailed.json`
+4. `runtime/action-network-detailed.json`
 5. `correlation/tempo-trace.json`
 6. `correlation/loki-trace-logs.json`
 
@@ -98,7 +106,7 @@ Repository examples are available under `docs/examples/ai-debug-runs/`.
 
 ## Expected interpretation
 
-`ai-summary.json` should be enough to classify:
+The V2 JSON outputs should be enough to classify:
 
 - `http_error`
 - `invalid_response_shape`
@@ -106,10 +114,11 @@ Repository examples are available under `docs/examples/ai-debug-runs/`.
 - `network_error`
 - `success`
 
-It also records:
+They also record:
 
 - selected app and scenario
 - expected vs observed HTTP status
 - root request URL and response body
 - UI failure title and detail
 - trace identifiers and linked trace/log artifacts
+- session-level tainting failures for persistent runs

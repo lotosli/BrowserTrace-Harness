@@ -1,11 +1,11 @@
 # BrowserTrace Onboarding for a New Java Project
 
-BrowserTrace works best as a targeted replay and observability tool for a Java application. The current usage model is:
+BrowserTrace works best as an agent-native E2E and observability tool for a Java application. The preferred V2 usage model is:
 
-1. Open the real page in Chrome and sign in manually if needed.
-2. Capture the active session with `browsertrace session ensure`.
-3. Replay a small number of important actions in a headless shadow browser.
-4. Correlate the browser request with Java traces, Java method spans, logs, and runtime artifacts.
+1. Define one or more scenario specs.
+2. Launch the Java service with the OpenTelemetry Java agent.
+3. Let `browsertrace run` or `run-session start` start the system and drive the browser.
+4. Correlate the browser request with Java traces, logs, and runtime artifacts.
 
 ## Minimum Setup
 
@@ -142,48 +142,37 @@ This is the recommended path for method-level spans because it combines:
 - generated profile files
 - method include rules from `scan-methods`
 
-### 5. Start Chrome with CDP enabled
+### 5. Write a V2 scenario spec
+
+Use a spec that declares:
+
+- service startup commands
+- browser steps
+- UI or trace expectations
+
+Examples are available under `docs/examples/v2/`.
+
+### 6. Run the scenario
+
+One-shot run:
 
 ```bash
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
-  --remote-debugging-port=9222
-```
-
-Open your target page in that browser and log in manually if needed.
-
-### 6. Capture the live browser session
-
-```bash
-browsertrace session ensure \
+browsertrace run docs/examples/v2/demo-profile-ok.yaml \
   --config config.browsertrace.yaml \
-  --app-name orders-ui \
-  --url http://127.0.0.1:3000/orders \
-  --session-id orders-ui-main \
   --json
 ```
 
-### 7. Replay a small number of high-value actions
-
-Example:
+Persistent session:
 
 ```bash
-browsertrace browser fill \
+browsertrace run-session start docs/examples/v2/demo-profile-ok.yaml \
   --config config.browsertrace.yaml \
-  --app-name orders-ui \
-  --session-id orders-ui-main \
-  --selector "#order-id-input" \
-  --value ORD-1001 \
-  --trace-output both \
   --json
 ```
 
 ```bash
-browsertrace browser click \
+browsertrace run-session resume <session-id> --through-step final-shot \
   --config config.browsertrace.yaml \
-  --app-name orders-ui \
-  --session-id orders-ui-main \
-  --selector "#search-button" \
-  --trace-output both \
   --json
 ```
 
@@ -207,8 +196,9 @@ After each run, inspect artifacts in this order:
 
 Then use:
 
-- `browsertrace trace lookup`
-- `browsertrace trace grep-logs`
+- `browsertrace judge <run-id>`
+- `browsertrace diagnose <run-id>`
+- `browsertrace run-session judge <session-id>`
 
 to correlate frontend activity with Java traces and logs.
 
@@ -218,4 +208,4 @@ to correlate frontend activity with Java traces and logs.
 - Prefer stable selectors, but do not force `data-testid` everywhere.
 - Always use `java-debug scan-methods` before `gen-profile` or `run`.
 - Launch the Java app through `browsertrace java-debug run` if you want method-level spans.
-- Treat BrowserTrace as targeted replay plus observability, not as a full autonomous test suite.
+- Prefer V2 specs and `run-session` over low-level `session/browser` commands for agent loops.

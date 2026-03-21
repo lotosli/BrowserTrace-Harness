@@ -1,48 +1,54 @@
 # Latest Local Test Results
 
-Last updated: 2026-03-20
+Last updated: 2026-03-21
 
-These results were validated locally against the demo apps plus the local Tempo/Loki/Collector stack.
+These results were validated locally against the demo apps plus the local Tempo/Loki/Collector stack, using the V2 `run` and `run-session` commands.
 
-## Browser scenario results
+## One-shot scenario results
 
 | Scenario | Status | AI outcome | Notes |
 | --- | --- | --- | --- |
-| `bad_request` | `400` | `http_error` | Root request captured with response JSON |
-| `not_found` | `404` | `http_error` | Root request captured with response JSON |
-| `server_error` | `500` | `http_error` | Root request captured with backend error body |
-| `bad_payload` | `200` | `invalid_response_shape` | UI and summary flag shape mismatch |
-| `servicegraph_ok` | `200` | `success` | Java method spans confirmed in Tempo |
+| `demo-profile-ok` | `passed` | `success` | Full `run` validated with trace and log correlation |
+| `demo-server-error` | `failed` | `http_error` | Root request captured with `500` backend failure |
+
+## Persistent session results
+
+### Successful through-step session
+
+- Session id: `sess_through_ok2`
+- Midpoint command: `run-session resume --through-step select-scenario`
+- Midpoint verdict: `incomplete`
+- Final command: `run-session resume --through-step final-shot`
+- Final session verdict: `passed`
+- Final source run: `run_ecea1762e0`
+
+### Failed through-step session
+
+- Session id: `sess_through_fail2`
+- Command: `run-session resume --through-step final-shot`
+- Batch stopped at: `click-run`
+- Final session verdict: `failed/historical_failure`
+- Tainting run: `run_4a3dee9937`
 
 ## Example validated runs
 
-### `bad_request`
+### `demo-profile-ok`
 
-- Run id: `run_246b3b457d`
-- Trace id: `36a241470d0dfb089602175b8425fc3e`
-- Root request: `POST http://127.0.0.1:8084/api/demo/run`
-- Root status: `400`
-- Summary artifact:
-  - `~/.browsertrace/artifacts/run_246b3b457d/runtime/ai-summary.json`
-
-### `server_error`
-
-- Run id: `run_58fd56e80b`
-- Trace id: `6e832064628cde13e30c57def8cea4f2`
-- Root request: `POST http://127.0.0.1:8084/api/demo/run`
-- Root status: `500`
-- Summary artifact:
-  - `~/.browsertrace/artifacts/run_58fd56e80b/runtime/ai-summary.json`
-
-### `bad_payload`
-
-- Run id: `run_27d03706d9`
-- Trace id: `7296440bdbed441ed2d168f782b8a917`
-- Root request: `POST http://127.0.0.1:8084/api/demo/run`
+- Run id: `run_0ca9a6e2c6`
+- Trace id: `b4e4053d8438ef74430348e73c9aadf7`
+- Root request: `POST http://127.0.0.1:8083/api/demo/run`
 - Root status: `200`
-- Outcome: `invalid_response_shape`
-- Summary artifact:
-  - `~/.browsertrace/artifacts/run_27d03706d9/runtime/ai-summary.json`
+- Correlation:
+  - Tempo batches: `2`
+  - Loki result groups: `1`
+
+### `demo-server-error`
+
+- Run id: `run_86d2a94b14`
+- Trace id: `75596862a8074c1ccbca282d707d6427`
+- Root request: `POST http://127.0.0.1:8083/api/demo/run`
+- Root status: `500`
+- Session judge category: `historical_failure`
 
 ## Java method span validation
 
@@ -57,13 +63,14 @@ Method-level spans were observed for the demo service, including:
 
 The agent-backed service was started with the OpenTelemetry Java agent and an explicit configuration file:
 
-- Agent version: `v2.26.0`
-- Java config style: `-Dotel.javaagent.configuration-file=...`
+- Agent artifact: `~/.browsertrace/java-debug/agents/opentelemetry-javaagent.jar`
+- Java config style: `-Dotel.exporter.otlp.endpoint=http://127.0.0.1:4318`
 
 ## Notes
 
 - Tempo and Loki root paths (`/`) return `404` by design in this setup.
-- Health checks are available under `/ready`.
-- The useful endpoints are the APIs:
-  - Tempo: `/api/traces/<trace-id>`
-  - Loki: `/loki/api/v1/query`
+- Demo backend health checks in V2 specs use `GET /api/demo/page`.
+- The useful endpoints are:
+  - OTLP ingest: `http://127.0.0.1:4318`
+  - Tempo trace query: `/api/traces/<trace-id>`
+  - Loki log query: `/loki/api/v1/query`
