@@ -17,6 +17,14 @@ export const configSchema = z.object({
     cdp_url: z.string().url(),
     executable_path: z.string().optional()
   }),
+  browser_use: z.object({
+    python_executable: z.string().optional(),
+    cdp_url: z.string().url().optional(),
+    executable_path: z.string().optional(),
+    user_data_dir: z.string().optional(),
+    headless: z.boolean().optional(),
+    wait_between_actions_ms: z.number().int().nonnegative().default(250)
+  }).default({}),
   artifacts: z.object({
     base_dir: z.string()
   }),
@@ -49,4 +57,3 @@ export const configSchema = z.object({
 
 export type BrowserTraceConfig = z.infer<typeof configSchema>;
 export type AppRuntimeConfig = z.infer<typeof appConfigSchema>;
-

@@ -1,6 +1,7 @@
 export type BaggageContext = {
   specId: string;
   runId: string;
+  stepId?: string;
   sessionId: string;
   shadowSessionId?: string;
   appName: string;
@@ -29,4 +30,3 @@ export type TraceJsonlRecord = {
   resource: Record<string, unknown>;
   baggage: Record<string, string>;
 };
-

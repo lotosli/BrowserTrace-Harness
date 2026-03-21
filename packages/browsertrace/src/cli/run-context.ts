@@ -41,6 +41,8 @@ export type RunContext = {
 
 const randomId = (prefix: string, length = 10): string => `${prefix}_${Math.random().toString(16).slice(2, 2 + length)}`;
 
+export const generateRandomRunId = (): string => randomId('run');
+
 export type ResolvedRunValues = {
   runId: string;
   sessionId: string;
@@ -128,5 +130,37 @@ export const refreshRunContextBaggage = (runContext: RunContext, overrides: Part
     otelContext: contextWithBaggage,
     traceHeaders,
     baggageHeaders: baggageContextToHeaders(baggageContext)
+  };
+};
+
+export const forkRunContext = async (
+  runContext: RunContext,
+  overrides: Partial<BaggageContext> & {
+    artifactRoot?: string;
+    traceOutputPath?: string;
+  }
+): Promise<RunContext> => {
+  const baggageContext = {
+    ...runContext.baggageContext,
+    ...overrides,
+    runId: overrides.runId ?? generateRandomRunId()
+  };
+  const { contextWithBaggage, traceHeaders } = attachBaggageToSpan(runContext.rootSpan, baggageContext);
+  const artifactRoot = overrides.artifactRoot
+    ? path.resolve(overrides.artifactRoot)
+    : path.join(runContext.config.artifacts.base_dir, baggageContext.runId);
+  await ensureDirectory(artifactRoot);
+  const artifactWriter = new ArtifactWriter(artifactRoot);
+  await artifactWriter.ensure();
+
+  return {
+    ...runContext,
+    baggageContext,
+    otelContext: contextWithBaggage,
+    traceHeaders,
+    baggageHeaders: baggageContextToHeaders(baggageContext),
+    artifactWriter,
+    artifactRoot,
+    traceOutputPath: overrides.traceOutputPath ?? runContext.traceOutputPath
   };
 };

@@ -1,6 +1,9 @@
 chrome:
   cdp_url: http://127.0.0.1:9222
 
+browser_use:
+  wait_between_actions_ms: 250
+
 artifacts:
   base_dir: ~/.browsertrace/artifacts
 

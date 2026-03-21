@@ -1,0 +1,73 @@
+schemaVersion: "1"
+scenarioId: demo-profile-ok
+appName: demo-react
+envName: local
+startUrl: http://127.0.0.1:5173/
+
+setup:
+  services:
+    - id: backend
+      run: >-
+        java
+        -javaagent:/Users/lotosli/.browsertrace/java-debug/agents/opentelemetry-javaagent.jar
+        -Dotel.service.name=demo-service
+        -Dotel.propagators=tracecontext,baggage
+        -Dotel.metrics.exporter=none
+        -Dotel.logs.exporter=none
+        -Dotel.traces.exporter=otlp
+        -Dotel.exporter.otlp.protocol=http/protobuf
+        -Dotel.exporter.otlp.endpoint=http://127.0.0.1:4318
+        -Dotel.instrumentation.logback-mdc.enabled=true
+        -jar target/demo-service-0.1.0.jar
+      cwd: ../../../apps/demo-service
+      healthcheck:
+        type: http
+        url: http://127.0.0.1:8083/api/demo/page
+        expectStatus: 200
+    - id: frontend
+      run: pnpm dev --host 127.0.0.1 --port 5173
+      cwd: ../../../apps/demo-frontend
+      healthcheck:
+        type: http
+        url: http://127.0.0.1:5173/
+        expectStatus: 200
+
+engine:
+  kind: browser_use_python
+  executablePath: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+  headless: true
+  waitBetweenActionsMs: 500
+
+steps:
+  - id: wait-initial-load
+    action: wait
+    ms: 1500
+  - id: select-app
+    action: select
+    selector: '[data-testid="app-select"]'
+    value: orders
+  - id: select-scenario
+    action: select
+    selector: '[data-testid="scenario-select"]'
+    value: profile_ok
+  - id: click-run
+    action: click
+    selector: '[data-testid="run-button"]'
+  - id: wait-result
+    action: wait
+    ms: 1200
+  - id: final-shot
+    action: screenshot
+
+oracles:
+  ui:
+    - selector: response-panel
+      visible: true
+      textIncludes: '"ok": true'
+  network:
+    failOnHttpStatusGte: 500
+  trace:
+    failOnMissingTrace: true
+    requireLookup: true
+  logs:
+    requireLookup: true

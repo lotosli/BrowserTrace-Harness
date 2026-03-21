@@ -11,7 +11,7 @@ export const runCommand = async <T>(
   commandName: string,
   options: GlobalCommandOptions,
   fallbackCode: HarnessErrorCode,
-  handler: (runContext: RunContext) => Promise<{ text: string[]; json: T }>
+  handler: (runContext: RunContext) => Promise<{ text: string[]; json: T; exitCode?: number }>
 ): Promise<void> => {
   const { config } = await loadConfig(options.config);
   const tracing = await createTracing(commandName, config, options);
@@ -25,6 +25,9 @@ export const runCommand = async <T>(
       process.stdout.write(`${renderJson(result.json)}\n`);
     } else {
       process.stdout.write(renderText(result.text));
+    }
+    if (typeof result.exitCode === 'number') {
+      process.exitCode = result.exitCode;
     }
   } catch (error) {
     const classified = classifyError(error, fallbackCode);

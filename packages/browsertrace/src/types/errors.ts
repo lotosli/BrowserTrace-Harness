@@ -16,6 +16,12 @@ export type HarnessErrorCode =
   | 'session_not_found'
   | 'trace_lookup_failed'
   | 'log_lookup_failed'
+  | 'spec_invalid'
+  | 'service_launch_failed'
+  | 'engine_not_available'
+  | 'engine_execution_failed'
+  | 'run_session_not_found'
+  | 'run_failed'
   | 'doctor_failed';
 
 export class HarnessError extends Error {
@@ -29,4 +35,3 @@ export class HarnessError extends Error {
     this.details = details;
   }
 }
-

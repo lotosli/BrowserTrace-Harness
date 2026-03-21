@@ -5,6 +5,7 @@ import type { BaggageContext, BaggageHeaderMap } from '../types/baggage.js';
 const toBaggageHeaders = (context: BaggageContext): BaggageHeaderMap => ({
   'spec.id': context.specId,
   'run.id': context.runId,
+  ...(context.stepId ? { 'step.id': context.stepId } : {}),
   'session.id': context.sessionId,
   ...(context.shadowSessionId ? { 'shadow.session.id': context.shadowSessionId } : {}),
   'app.name': context.appName,

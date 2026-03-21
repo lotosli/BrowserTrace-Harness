@@ -17,6 +17,15 @@ export const loadConfig = async (configPath?: string): Promise<{ config: Browser
     const parsed = YAML.parse(raw);
     const config = configSchema.parse(parsed);
     config.artifacts.base_dir = expandHome(config.artifacts.base_dir);
+    config.browser_use.python_executable = config.browser_use.python_executable
+      ? expandHome(config.browser_use.python_executable)
+      : undefined;
+    config.browser_use.executable_path = config.browser_use.executable_path
+      ? expandHome(config.browser_use.executable_path)
+      : undefined;
+    config.browser_use.user_data_dir = config.browser_use.user_data_dir
+      ? expandHome(config.browser_use.user_data_dir)
+      : undefined;
     config.java_debug.default_profile_dir = expandHome(config.java_debug.default_profile_dir);
     config.trace.jsonl_default_path = config.trace.jsonl_default_path
       ? expandHome(config.trace.jsonl_default_path)
@@ -33,4 +42,3 @@ export const loadConfig = async (configPath?: string): Promise<{ config: Browser
     throw error;
   }
 };
-
